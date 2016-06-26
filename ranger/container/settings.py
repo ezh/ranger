@@ -68,13 +68,13 @@ ALLOWED_SETTINGS = {
 }
 
 ALLOWED_VALUES = {
-    'confirm_on_delete': ['always', 'multiple', 'never'],
+    'confirm_on_delete': ['multiple', 'always', 'never'],
     'line_numbers': ['false', 'absolute', 'relative'],
     'preview_images_method': ['w3m', 'iterm2'],
-    'vcs_backend_bzr': ['enabled', 'local', 'disabled'],
-    'vcs_backend_git': ['enabled', 'local', 'disabled'],
-    'vcs_backend_hg': ['enabled', 'local', 'disabled'],
-    'vcs_backend_svn': ['enabled', 'local', 'disabled'],
+    'vcs_backend_bzr': ['disabled', 'local', 'enabled'],
+    'vcs_backend_git': ['disabled', 'local', 'enabled'],
+    'vcs_backend_hg': ['disabled', 'local', 'enabled'],
+    'vcs_backend_svn': ['disabled', 'local', 'enabled'],
     'viewmode': ['miller', 'multipane'],
 }
 
@@ -100,6 +100,10 @@ class Settings(SignalDispatcher, FileManagerAware):
                     self._sanitize, priority=1.0)
             self.signal_bind('setopt.' + name,
                     self._raw_set_with_signal, priority=0.2)
+        for name, values in ALLOWED_VALUES.items():
+            assert len(values) > 0
+            assert name in ALLOWED_SETTINGS
+            self._raw_set(name, values[0])
 
     def _sanitize(self, signal):
         name, value = signal.setting, signal.value
